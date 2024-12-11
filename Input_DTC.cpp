@@ -2,12 +2,17 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <set>
+#include<map>
+#include<cmath>
 
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////
-// Function Declaration
-void PrintData(vector<vector<string>> &table);
+// Function Declarationsskdjfhasdkljfhbasdlkfk
+void PrintData(const vector<vector<string>> &table);
+
+void CountUniqueAttributes(const vector<vector<string>> &table);
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -17,70 +22,81 @@ class Input
     int T_row = 0;
 
 public:
-    Input(string f_name)
+     Input(string f_name)
     {
         ifstream reader(f_name);
         if (reader.is_open())
         {
-            string B_Price, Maint_cost, N_doors, N_person, Lug_capacity, Safety;
-            table.resize(1000);
-
+            table.resize(4000);
             while (reader.good())
             {
-                table[T_row].resize(6);
-                getline(reader, table[T_row][0], ',');
-                getline(reader, table[T_row][1], ',');
-                getline(reader, table[T_row][2], ',');
-                getline(reader, table[T_row][3], ',');
-                getline(reader, table[T_row][4], ',');
-                getline(reader, table[T_row][5], '\n');
-
+                table[T_row].resize(7);
+                for (int i = 0; i < 7; ++i)
+                {   
+                    getline(reader, table[T_row][i], (i < 6 ? ',' : '\n'));
+                
+                }
                 T_row++;
-            }  
-            if(table.size() > T_row) 
-            {
-                table.erase(table.begin() + T_row ,table.end() ) ;
             }
+            if (table.size() > T_row) 
+            {   
+                table.erase(table.begin() + T_row, table.end());
+            }
+             reader.close();
+            
         }
         else
         {
-            cout << "File does not exist ;" << endl;
+            cout << "File does not exist \n exiting... ;" << endl;
+            Sleep(1000);
+            exit(1);
         }
     }
-    int GetRow()
+    
+    int GetRow() const
     {
         return T_row;
     }
-    vector<vector<string>>Get_table()
+
+    vector<vector<string>> GetTable() const
     {
-        return table ;
+        return table;
     }
 };
 
-void PrintData(vector<vector<string>> &table)
+
+void PrintData(const vector<vector<string>> &table)
 {
-    for (int i = 0; i < table.size(); i++)
+    for (const auto& row : table)
     {
-        for (int j = 0; j < table[0].size(); j++)
+        for (const auto& elem : row)
         {
-            cout << table[i][j] << ' ' << ',';
+            cout << elem << ',';
         }
         cout << endl;
     }
 }
 
-int main(int argc, const char *argv[])
+void CountUniqueAttributes(const vector<vector<string>> &table)  /////meaning it won’t modify the data and avoids copying for efficiency.
 {
-    cout << "argc value : " << argc << endl;
-    cout << "argv[0] : " << argv[0] << endl;
-    // cout << "argv[1] : "<< argv[1] << endl ;
-    string f_name;
-    cout << "Enter Your File Name" << endl;
-    cin >> f_name;
-    Input train_file(f_name) ;
-    cout << "get Row : "<<train_file.GetRow() << endl ;
-    PrintData(train_file.Get_table()) ;
-    
+    if (table.empty()) return;
 
-    return 0;
+    // Use a set for each column to track unique attributes
+    vector<set<string>> uniqueAttributes(6);
+    
+    for (int col = 0 ; col < 6 ; col++)
+    {   
+        for (int row = 0 ; row < table.size() ; row++)
+        {   
+
+            uniqueAttributes[col].insert(table[row][col]);
+        }
+    }
+        // Print unique counts for each column
+    for (size_t col = 0; col < uniqueAttributes.size(); ++col)
+    {
+        cout << "Column " << col + 1 << " has " << uniqueAttributes[col].size() << " unique attributes." << endl;
+    }
 }
+
+
